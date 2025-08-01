@@ -13,7 +13,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     // 작성자명으로 필터링하고 수정일 기준으로 내림차순 정렬
     List<Schedule> findByAuthorOrderByModifiedAtDesc(String author);
 
-
-
-
+    default Schedule findByIdOrElseThrow(Long scheduleId) {
+        return findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다. ID: " + scheduleId));
+    }
 }

@@ -20,7 +20,6 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final CommentService commentService;
 
-
     @Transactional
     public CreateScheduleResponseDto createSchedule(final CreateScheduleRequestDto createScheduleRequestDto) {
 
@@ -54,8 +53,8 @@ public class ScheduleService {
 
     @Transactional
     public UpdateScheduleByIdResponseDto updateSchedule(final Long scheduleId, final UpdateScheduleRequestDto updateScheduleRequestDto) {
-        Schedule schedule = scheduleRepository.findById(scheduleId) // Default Method -> ?
-                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다. ID: " + scheduleId));
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(scheduleId); // Global Exception Handler (후속 처리?)
+
         schedule.validatePassword(updateScheduleRequestDto.getPassword());
         schedule.updateSchedule(updateScheduleRequestDto.getTitle(), updateScheduleRequestDto.getAuthor());
 
@@ -64,8 +63,7 @@ public class ScheduleService {
 
     @Transactional
     public void deleteSchedule(final Long scheduleId, final DeleteScheduleRequestDto deleteScheduleRequestDto) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다. ID: " + scheduleId));
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
         schedule.validatePassword(deleteScheduleRequestDto.getPassword());
         scheduleRepository.delete(schedule);
     }
@@ -73,10 +71,9 @@ public class ScheduleService {
 
     @Transactional
     public GetScheduleByIdResponseDto getScheduleById(final Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다. ID: " + scheduleId));
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
 
-        List<Comment> commentListBySchedule = commentService.getCommentListByScheduleId(scheduleId);
+        List<Comment> commentListBySchedule = commentService.getCommentListByScheduleId(scheduleId); // 퍼사드 레이어? -> 순환참조 방지 (퍼사드 패턴)
         List<GetScheduleByIdResponseDto.CommentBySchedule> commentList = commentListBySchedule.stream()
                 .map(GetScheduleByIdResponseDto.CommentBySchedule::new)
                 .toList();
