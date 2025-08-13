@@ -1,11 +1,12 @@
 package sparta.schedule.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "comments")
 @Entity
 public class Comment extends BaseEntity {

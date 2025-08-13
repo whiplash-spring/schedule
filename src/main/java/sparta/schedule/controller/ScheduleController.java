@@ -21,6 +21,7 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<CreateScheduleResponseDto> createSchedule(
             @Valid @RequestBody CreateScheduleRequestDto createScheduleRequestDto) {
+
         return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(createScheduleRequestDto));
     }
 
@@ -37,6 +38,7 @@ public class ScheduleController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
 
     @PatchMapping("/{scheduleId}")
     public ResponseEntity<UpdateScheduleByIdResponseDto> updateSchedule(

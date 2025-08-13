@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 public class GetScheduleByIdResponseDto {
-
+    
     private final Long id;
     private final String title;
     private final String content;
@@ -23,7 +23,7 @@ public class GetScheduleByIdResponseDto {
         this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
-        this.author = schedule.getAuthor();
+        this.author = schedule.getUser().getUsername();
         this.createdAt = schedule.getCreatedAt();
         this.modifiedAt = schedule.getModifiedAt();
         this.commentList = commentList;

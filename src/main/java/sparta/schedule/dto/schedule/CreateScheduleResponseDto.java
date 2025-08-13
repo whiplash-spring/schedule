@@ -16,12 +16,16 @@ public class CreateScheduleResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public CreateScheduleResponseDto(Schedule schedule) {
+    private CreateScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
-        this.author = schedule.getAuthor();
+        this.author = schedule.getUser().getUsername();
         this.createdAt = schedule.getCreatedAt();
         this.modifiedAt = schedule.getModifiedAt();
+    }
+
+    public static CreateScheduleResponseDto fromSchedule(Schedule schedule) {
+        return new CreateScheduleResponseDto(schedule);
     }
 }

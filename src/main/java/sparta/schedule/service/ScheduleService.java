@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import sparta.schedule.dto.schedule.*;
 import sparta.schedule.entity.Comment;
 import sparta.schedule.entity.Schedule;
+import sparta.schedule.entity.User;
 import sparta.schedule.repository.ScheduleRepository;
+import sparta.schedule.repository.UserRepository;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -19,19 +21,22 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final CommentService commentService;
+    private final UserRepository userRepository;
 
     @Transactional
-    public CreateScheduleResponseDto createSchedule(final CreateScheduleRequestDto createScheduleRequestDto) {
+    public CreateScheduleResponseDto createSchedule(final CreateScheduleRequestDto request) {
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         Schedule schedule = new Schedule(
-                createScheduleRequestDto.getTitle(),
-                createScheduleRequestDto.getContent(),
-                createScheduleRequestDto.getAuthor(),
-                createScheduleRequestDto.getPassword()
+                request.getTitle(),
+                request.getContent(),
+                user,
+                request.getPassword()
         );
         scheduleRepository.save(schedule);
-
-        return new CreateScheduleResponseDto(schedule);
+        return CreateScheduleResponseDto.fromSchedule(schedule);
     }
 
     @Transactional(readOnly = true)
@@ -42,22 +47,22 @@ public class ScheduleService {
         if (isAuthorEmpty) {
             schedules = scheduleRepository.findAllByOrderByModifiedAtDesc();
         } else {
-            schedules = scheduleRepository.findByAuthorOrderByModifiedAtDesc(author);
+            schedules = scheduleRepository.findByUsernameOrderByModifiedAtDesc(author);
         }
 
         return schedules.stream()
                 .map(GetScheduleListResponseDto::new)
                 .toList();
-
     }
 
     @Transactional
-    public UpdateScheduleByIdResponseDto updateSchedule(final Long scheduleId, final UpdateScheduleRequestDto updateScheduleRequestDto) {
+    public UpdateScheduleByIdResponseDto updateSchedule(final Long scheduleId, final UpdateScheduleRequestDto request) {
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(scheduleId); // Global Exception Handler (후속 처리?)
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        schedule.validatePassword(updateScheduleRequestDto.getPassword());
-        schedule.updateSchedule(updateScheduleRequestDto.getTitle(), updateScheduleRequestDto.getAuthor());
-
+        schedule.validatePassword(request.getPassword());
+        schedule.updateTitleAndUser(request.getTitle(), user);
         return new UpdateScheduleByIdResponseDto(schedule);
     }
 
@@ -69,7 +74,7 @@ public class ScheduleService {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public GetScheduleByIdResponseDto getScheduleById(final Long scheduleId) {
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
 
@@ -82,6 +87,6 @@ public class ScheduleService {
     }
 
     private boolean validateAuthorIsEmpty(final String author) {
-        return Objects.isNull(author) || author.trim().isEmpty();
+        return !StringUtils.hasText(author);
     }
 }
