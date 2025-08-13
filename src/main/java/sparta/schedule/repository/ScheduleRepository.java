@@ -16,6 +16,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.user.username = :username ORDER BY s.modifiedAt DESC")
     List<Schedule> findByUsernameOrderByModifiedAtDesc(@Param("username") String username);
 
+
+
     default Schedule findByIdOrElseThrow(Long scheduleId) {
         return findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다. ID: " + scheduleId));

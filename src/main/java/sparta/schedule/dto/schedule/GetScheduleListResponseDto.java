@@ -12,7 +12,7 @@ public class GetScheduleListResponseDto {
     private final Long id;
     private final String title;
     private final String content;
-    private final String author;
+    private final String username;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
@@ -20,7 +20,7 @@ public class GetScheduleListResponseDto {
         this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
-        this.author = schedule.getUser().getUsername();
+        this.username = schedule.getUser().getUsername();
         this.createdAt = schedule.getCreatedAt();
         this.modifiedAt = schedule.getModifiedAt();
     }
