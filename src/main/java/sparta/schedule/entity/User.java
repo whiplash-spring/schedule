@@ -24,12 +24,16 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 100, unique = true)
     private String email;
 
+    @Column(nullable = false, length = 60)
+    private String password;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Schedule> schedules = new ArrayList<>();
 
-    public User(String username, String email) {
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
+        this.password = password;
     }
 
     public void update(String username, String email) {

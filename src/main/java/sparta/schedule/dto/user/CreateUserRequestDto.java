@@ -16,4 +16,8 @@ public class CreateUserRequestDto {
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     @Size(max = 100, message = "이메일은 최대 100자까지 입력할 수 있습니다.")
     private String email;
+
+    @NotBlank
+    @Size(min = 8, max = 64, message = "비밀번호는 8 ~ 64자를 입력해주세요.")
+    private String password;
 }
