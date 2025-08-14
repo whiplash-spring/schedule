@@ -14,7 +14,7 @@ public class GetScheduleByIdResponseDto {
     private final Long id;
     private final String title;
     private final String content;
-    private final String author;
+    private final String username;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
     private final List<CommentBySchedule> commentList;
@@ -23,7 +23,7 @@ public class GetScheduleByIdResponseDto {
         this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
-        this.author = schedule.getUser().getUsername();
+        this.username = schedule.getUser().getUsername();
         this.createdAt = schedule.getCreatedAt();
         this.modifiedAt = schedule.getModifiedAt();
         this.commentList = commentList;
@@ -33,14 +33,14 @@ public class GetScheduleByIdResponseDto {
     public static class CommentBySchedule {
         private final Long commentId;
         private final String content;
-        private final String author;
+        private final String username;
         private final LocalDateTime createdAt;
         private final LocalDateTime modifiedAt;
 
         public CommentBySchedule(final Comment comment) {
             this.commentId = comment.getId();
             this.content = comment.getContent();
-            this.author = comment.getAuthor();
+            this.username = comment.getUser().getUsername();
             this.createdAt = comment.getCreatedAt();
             this.modifiedAt = comment.getModifiedAt();
         }

@@ -2,6 +2,8 @@ package sparta.schedule.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -40,19 +42,12 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetScheduleListResponseDto> getAllSchedules(final String author) {
-        List<Schedule> schedules;
+    public Page<GetScheduleListResponseDto> getAllSchedules(final String author, final Pageable pageable) {
+        final Page<Schedule> page = (StringUtils.hasText(author))
+                ? scheduleRepository.findByUserUsername(author, pageable)
+                : scheduleRepository.findAll(pageable);
 
-        boolean isAuthorEmpty = validateAuthorIsEmpty(author);
-        if (isAuthorEmpty) {
-            schedules = scheduleRepository.findAllByOrderByModifiedAtDesc();
-        } else {
-            schedules = scheduleRepository.findByUsernameOrderByModifiedAtDesc(author);
-        }
-
-        return schedules.stream()
-                .map(GetScheduleListResponseDto::new)
-                .toList();
+        return page.map(GetScheduleListResponseDto::new);
     }
 
     @Transactional

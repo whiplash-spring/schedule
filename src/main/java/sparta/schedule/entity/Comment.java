@@ -15,23 +15,25 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long scheduleId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
 
     @Column(nullable = false, length = 100)
     private String content;
 
-    @Column(nullable = false)
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private String password;
 
 
-    public Comment(Long scheduleId, String content, String author, String password) {
-        this.scheduleId = scheduleId;
+    public Comment(Schedule schedule, String content, User user, String password) {
+        this.schedule = schedule;
         this.content = content;
-        this.author = author;
+        this.user = user;
         this.password = password;
     }
 }

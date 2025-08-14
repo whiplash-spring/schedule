@@ -2,6 +2,10 @@ package sparta.schedule.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +30,11 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetScheduleListResponseDto>> getAllSchedules(@RequestParam(required = false) String author) {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedules(author));
+    public ResponseEntity<Page<GetScheduleListResponseDto>> getAllSchedules(
+            @RequestParam(required = false) String author,
+            @PageableDefault(size = 10, sort = "modifiedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedules(author, pageable));
     }
 
     @GetMapping("/{scheduleId}")

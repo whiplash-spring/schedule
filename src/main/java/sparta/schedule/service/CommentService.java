@@ -7,8 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import sparta.schedule.dto.comment.CreateCommentRequestDto;
 import sparta.schedule.dto.comment.CreateCommentResponseDto;
 import sparta.schedule.entity.Comment;
+import sparta.schedule.entity.Schedule;
+import sparta.schedule.entity.User;
+import sparta.schedule.global.PasswordEncoder;
 import sparta.schedule.repository.CommentRepository;
 import sparta.schedule.repository.ScheduleRepository;
+import sparta.schedule.repository.UserRepository;
 
 import java.util.List;
 
@@ -19,21 +23,28 @@ public class CommentService {
 
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public CreateCommentResponseDto createComment(final CreateCommentRequestDto requestDto, final Long scheduleId) {
+    public CreateCommentResponseDto createComment(final CreateCommentRequestDto request, final Long scheduleId) {
 
-        validateExistSchedule(scheduleId);
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일정입니다."));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         long totalCommentOfSchedule = getTotalCommentOfSchedule(scheduleId);
         validateMaxCommentCountOverTen(totalCommentOfSchedule);
 
         Comment comment = new Comment(
-                scheduleId,
-                requestDto.getContent(),
-                requestDto.getAuthor(),
-                requestDto.getPassword()
+                schedule,
+                request.getContent(),
+                user,
+                passwordEncoder.encode(request.getPassword())
         );
+
         commentRepository.save(comment);
 
         return new CreateCommentResponseDto(comment);
@@ -54,12 +65,6 @@ public class CommentService {
 
     private long getTotalCommentOfSchedule(final Long scheduleId) {
         return commentRepository.countByScheduleId((scheduleId));
-    }
-
-    private void validateExistSchedule(final Long scheduleId) {
-        if (!scheduleRepository.existsById(scheduleId)) {
-            throw new IllegalArgumentException("존재하지 않는 일정입니다.");
-        }
     }
 
 }

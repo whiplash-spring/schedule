@@ -14,6 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorized(UnAuthorizedException e) {
+        log.error(e.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(
                 "AUTH",
                 e.getMessage(),

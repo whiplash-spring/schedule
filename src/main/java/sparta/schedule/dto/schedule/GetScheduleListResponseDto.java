@@ -24,4 +24,5 @@ public class GetScheduleListResponseDto {
         this.createdAt = schedule.getCreatedAt();
         this.modifiedAt = schedule.getModifiedAt();
     }
+
 }
