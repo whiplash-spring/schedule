@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sparta.schedule.dto.schedule.*;
+import sparta.schedule.global.SessionConst;
 import sparta.schedule.service.ScheduleService;
 
 import java.util.List;
@@ -24,9 +25,10 @@ public class ScheduleController {
 
     @PostMapping
     public ResponseEntity<CreateScheduleResponseDto> createSchedule(
+            @SessionAttribute(name = SessionConst.LOGIN_USER) Long userId,
             @Valid @RequestBody CreateScheduleRequestDto createScheduleRequestDto) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(createScheduleRequestDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(createScheduleRequestDto, userId));
     }
 
     @GetMapping

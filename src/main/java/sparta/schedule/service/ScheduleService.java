@@ -26,9 +26,9 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateScheduleResponseDto createSchedule(final CreateScheduleRequestDto request) {
+    public CreateScheduleResponseDto createSchedule(final CreateScheduleRequestDto request, final Long userId) {
 
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         Schedule schedule = new Schedule(
